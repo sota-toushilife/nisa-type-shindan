@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>NISAタイプ診断｜そうた ｜損しないNISA始め方</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', sans-serif;
+    background: #f0fdf4;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 20px 16px 40px;
+  }
+  .container { width: 100%; max-width: 480px; }
+
+  /* ヘッダー */
+  .header {
+    text-align: center;
+    padding: 24px 0 20px;
+  }
+  .header-account {
+    font-size: 11px;
+    color: #6b7280;
+    margin-bottom: 8px;
+  }
+  .header-tag {
+    display: inline-block;
+    background: #dcfce7;
+    color: #16a34a;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-bottom: 12px;
+  }
+  .header h1 {
+    font-size: 26px;
+    font-weight: 900;
+    color: #111827;
+    line-height: 1.3;
+    margin-bottom: 8px;
+  }
+  .header p {
+    font-size: 13px;
+    color: #6b7280;
+    line-height: 1.7;
+  }
+  .header-badges {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  }
+  .badge {
+    background: #fff;
+    border: 1px solid #d1fae5;
+    color: #059669;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+  }
+  .start-btn {
+    display: block;
+    width: 100%;
+    background: linear-gradient(135deg, #059669, #10b981);
+    color: #fff;
+    font-size: 16px;
+    font-weight: 800;
+    padding: 16px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    margin-top: 20px;
+    box-shadow: 0 4px 12px rgba(5,150,105,0.3);
+    letter-spacing: 0.5px;
+  }
+  .start-btn:active { transform: scale(0.98); }
+
+  /* 質問画面 */
+  .question-screen { display: none; }
+  .progress-wrap { margin-bottom: 16px; }
+  .progress-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #6b7280;
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+  .progress-bar {
+    height: 6px;
+    background: #d1fae5;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #059669, #10b981);
+    border-radius: 10px;
+    transition: width 0.4s ease;
+  }
+  .q-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 24px 20px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+  .q-num {
+    font-size: 11px;
+    font-weight: 700;
+    color: #059669;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .q-text {
+    font-size: 17px;
+    font-weight: 800;
+    color: #111827;
+    line-height: 1.5;
+    margin-bottom: 20px;
+  }
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option-btn {
+    background: #f9fafb;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 14px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s;
+    line-height: 1.4;
+  }
+  .option-btn:active, .option-btn.selected {
+    border-color: #059669;
+    background: #f0fdf4;
+    color: #065f46;
+  }
+  .nav-btns {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  .back-btn {
+    flex: 1;
+    background: #f3f4f6;
+    border: none;
+    border-radius: 10px;
+    padding: 13px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #6b7280;
+    cursor: pointer;
+  }
+  .next-btn {
+    flex: 2;
+    background: linear-gradient(135deg, #059669, #10b981);
+    border: none;
+    border-radius: 10px;
+    padding: 13px;
+    font-size: 14px;
+    font-weight: 800;
+    color: #fff;
+    cursor: pointer;
+    opacity: 0.4;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+  .next-btn.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* 結果画面 */
+  .result-screen { display: none; }
+  .result-header {
+    background: linear-gradient(135deg, #059669, #10b981);
+    border-radius: 16px;
+    padding: 24px 20px;
+    text-align: center;
+    color: #fff;
+    margin-bottom: 16px;
+  }
+  .result-label {
+    font-size: 11px;
+    font-weight: 700;
+    opacity: 0.85;
+    margin-bottom: 6px;
+    letter-spacing: 0.5px;
+  }
+  .result-type-emoji {
+    font-size: 48px;
+    margin-bottom: 8px;
+  }
+  .result-type-name {
+    font-size: 22px;
+    font-weight: 900;
+    margin-bottom: 6px;
+  }
+  .result-type-sub {
+    font-size: 13px;
+    opacity: 0.9;
+    line-height: 1.6;
+  }
+
+  /* パラメーターバー */
+  .param-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    margin-bottom: 12px;
+  }
+  .param-title {
+    font-size: 13px;
+    font-weight: 800;
+    color: #111827;
+    margin-bottom: 14px;
+  }
+  .param-row {
+    margin-bottom: 12px;
+  }
+  .param-row:last-child { margin-bottom: 0; }
+  .param-label-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+  }
+  .param-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #374151;
+  }
+  .param-score {
+    font-size: 12px;
+    font-weight: 800;
+    color: #059669;
+  }
+  .param-bar-bg {
+    height: 10px;
+    background: #e5e7eb;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .param-bar-fill {
+    height: 100%;
+    border-radius: 10px;
+    background: linear-gradient(90deg, #059669, #10b981);
+    transition: width 1s ease;
+    width: 0;
+  }
+
+  /* 強み・注意点カード */
+  .info-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    margin-bottom: 12px;
+  }
+  .info-card-title {
+    font-size: 13px;
+    font-weight: 800;
+    color: #111827;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .info-item {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    margin-bottom: 8px;
+    font-size: 13px;
+    color: #374151;
+    line-height: 1.6;
+  }
+  .info-item:last-child { margin-bottom: 0; }
+  .info-icon { flex-shrink: 0; }
+
+  .retry-btn {
+    display: block;
+    width: 100%;
+    background: #f3f4f6;
+    border: none;
+    border-radius: 12px;
+    padding: 14px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #6b7280;
+    cursor: pointer;
+    margin-top: 8px;
+  }
+
+  .screen { display: none; }
+  .screen.active { display: block; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- トップ画面 -->
+  <div id="screen-top" class="screen active">
+    <div class="header">
+      <div class="header-account">そうた ｜損しないNISA始め方</div>
+      <div class="header-tag">🌿 無料診断</div>
+      <h1>あなたは<br>どのNISA<br>タイプ？</h1>
+      <p>10の質問でわかる<br>あなたに合った投資スタイル</p>
+      <div class="header-badges">
+        <span class="badge">全10問</span>
+        <span class="badge">約1〜2分</span>
+        <span class="badge">無料</span>
+        <span class="badge">登録不要</span>
+      </div>
+    </div>
+    <button class="start-btn" onclick="startQuiz()">診断スタート →</button>
+  </div>
+
+  <!-- 質問画面 -->
+  <div id="screen-question" class="screen">
+    <div class="progress-wrap">
+      <div class="progress-info">
+        <span id="q-label">QUESTION 1</span>
+        <span id="q-count">1 / 10</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill" style="width:10%"></div>
+      </div>
+    </div>
+    <div class="q-card">
+      <div class="q-num" id="q-num">Q1</div>
+      <div class="q-text" id="q-text"></div>
+      <div class="options" id="options"></div>
+      <div class="nav-btns">
+        <button class="back-btn" onclick="goBack()">← 戻る</button>
+        <button class="next-btn" id="next-btn" onclick="goNext()">次の質問へ →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 結果画面 -->
+  <div id="screen-result" class="screen">
+    <div class="result-header">
+      <div class="result-label">あなたの診断結果</div>
+      <div class="result-type-emoji" id="result-emoji">🌱</div>
+      <div class="result-type-name" id="result-name"></div>
+      <div class="result-type-sub" id="result-sub"></div>
+    </div>
+
+    <div class="param-card">
+      <div class="param-title">📊 あなたの5つの投資スタイル</div>
+      <div id="params"></div>
+    </div>
+
+    <div class="info-card">
+      <div class="info-card-title">💪 あなたの強み</div>
+      <div id="strengths"></div>
+    </div>
+
+    <div class="info-card">
+      <div class="info-card-title">⚠️ 気をつけたいこと</div>
+      <div id="cautions"></div>
+    </div>
+
+    <div class="info-card">
+      <div class="info-card-title">📌 まず最初にやること</div>
+      <div id="actions"></div>
+    </div>
+
+    <button class="retry-btn" onclick="restart()">🔄 もう一度診断する</button>
+  </div>
+
+</div>
+
+<script>
+// 質問データ（軸: cautious=慎重さ, action=行動力, goal=目標志向, keep=継続力, learn=知識欲）
+const questions = [
+  {
+    text: "投資で一番大事なのは？",
+    options: [
+      { text: "🛡️ とにかく損したくない", scores: { cautious: 2, action: 0, goal: 0, keep: 0, learn: 0 } },
+      { text: "📈 多少リスクがあっても増やしたい", scores: { cautious: 0, action: 1, goal: 1, keep: 0, learn: 0 } },
+    ]
+  },
+  {
+    text: "新しいことを始めるとき、あなたは？",
+    options: [
+      { text: "🔍 徹底的に調べてから動く", scores: { cautious: 1, action: 0, goal: 0, keep: 0, learn: 2 } },
+      { text: "⚡ とりあえずやってみる", scores: { cautious: 0, action: 2, goal: 0, keep: 0, learn: 0 } },
+    ]
+  },
+  {
+    text: "「やろう」と思ったとき、実際に動くのは？",
+    options: [
+      { text: "🏃 決めたらすぐ", scores: { cautious: 0, action: 2, goal: 0, keep: 0, learn: 0 } },
+      { text: "🤔 タイミングを見てから", scores: { cautious: 1, action: 0, goal: 0, keep: 0, learn: 0 } },
+      { text: "😅 気づいたらそのままに", scores: { cautious: 0, action: 0, goal: 0, keep: 1, learn: 0 } },
+    ]
+  },
+  {
+    text: "お金を貯める目的は？",
+    options: [
+      { text: "🎯 〇〇のために〇万円と決めている", scores: { cautious: 0, action: 0, goal: 2, keep: 1, learn: 0 } },
+      { text: "🌫️ なんとなく将来のため", scores: { cautious: 0, action: 0, goal: 0, keep: 0, learn: 0 } },
+      { text: "💭 まだよく考えてない", scores: { cautious: 0, action: 0, goal: 0, keep: 0, learn: 0 } },
+    ]
+  },
+  {
+    text: "5年後の自分のイメージ、ある？",
+    options: [
+      { text: "✨ わりとはっきりある", scores: { cautious: 0, action: 0, goal: 2, keep: 0, learn: 0 } },
+      { text: "🌤️ なんとなくある", scores: { cautious: 0, action: 0, goal: 1, keep: 0, learn: 0 } },
+      { text: "❓ あまりない", scores: { cautious: 0, action: 0, goal: 0, keep: 0, learn: 0 } },
+    ]
+  },
+  {
+    text: "毎日続けてることある？",
+    options: [
+      { text: "✅ ある（習慣化が得意）", scores: { cautious: 0, action: 0, goal: 0, keep: 2, learn: 0 } },
+      { text: "😅 三日坊主になりがち", scores: { cautious: 0, action: 0, goal: 0, keep: 0, learn: 0 } },
+    ]
+  },
+  {
+    text: "毎月の積立、設定したら忘れてOK？",
+    options: [
+      { text: "😴 設定したら任せっきりでOK", scores: { cautious: 0, action: 0, goal: 0, keep: 2, learn: 0 } },
+      { text: "📱 毎月確認して把握したい", scores: { cautious: 0, action: 0, goal: 1, keep: 0, learn: 1 } },
+    ]
+  },
+  {
+    text: "投資の仕組み、どのくらい知りたい？",
+    options: [
+      { text: "📚 ちゃんと理解してから始めたい", scores: { cautious: 1, action: 0, goal: 0, keep: 0, learn: 2 } },
+      { text: "🙆 難しいのは苦手、シンプルでいい", scores: { cautious: 0, action: 0, goal: 0, keep: 0, learn: 0 } },
+    ]
+  },
+  {
+    text: "SNSで「NISA始めた」の投稿を見たら？",
+    options: [
+      { text: "🔎 詳しく調べる", scores: { cautious: 0, action: 1, goal: 0, keep: 0, learn: 2 } },
+      { text: "👀 気になるけど自分はまだいいかな", scores: { cautious: 1, action: 0, goal: 0, keep: 0, learn: 0 } },
+      { text: "😑 ふーんで終わる", scores: { cautious: 0, action: 0, goal: 0, keep: 0, learn: 0 } },
+    ]
+  },
+  {
+    text: "今すぐNISA口座を作れるとしたら？",
+    options: [
+      { text: "🚀 今すぐ作る！", scores: { cautious: 0, action: 2, goal: 0, keep: 0, learn: 0 } },
+      { text: "📖 もう少し調べてから", scores: { cautious: 1, action: 0, goal: 0, keep: 0, learn: 1 } },
+      { text: "⏳ タイミングが来たら", scores: { cautious: 1, action: 0, goal: 0, keep: 0, learn: 0 } },
+    ]
+  },
+];
+
+// タイプ定義
+const types = [
+  {
+    id: "steady",
+    emoji: "🐢",
+    name: "堅実コツコツタイプ",
+    sub: "安全第一で長期的にじっくり増やすのが得意なタイプ",
+    condition: s => s.cautious >= 3 && s.keep >= 2,
+    strengths: ["損を避ける慎重さがある", "コツコツ続けられる継続力がある", "焦って動かないので大きな失敗をしにくい"],
+    cautions: ["慎重すぎてなかなか始められないことがある", "チャンスを逃すことも"],
+    actions: ["まず少額（月1,000円〜）で積立NISAをスタート", "S&P500などのシンプルな投資信託1本に絞る"],
+  },
+  {
+    id: "goal",
+    emoji: "🦅",
+    name: "目標一直線タイプ",
+    sub: "明確な目標に向かってブレずに動けるタイプ",
+    condition: s => s.goal >= 3,
+    strengths: ["目標が明確なのでブレにくい", "計画を立てて動くのが得意", "長期で見たときに成果が出やすい"],
+    cautions: ["計画通りにいかないとストレスを感じやすい", "目標変更に柔軟に対応を"],
+    actions: ["目標金額から逆算して毎月の積立額を決める", "NISAの年間上限（120万円）まで使い切ることを目標に"],
+  },
+  {
+    id: "fast",
+    emoji: "⚡",
+    name: "まず一歩タイプ",
+    sub: "考えるより先に動ける行動力が武器のタイプ",
+    condition: s => s.action >= 3,
+    strengths: ["始めるハードルが低い", "チャンスをすぐに掴める", "実際にやりながら学べる"],
+    cautions: ["勢いで動くと後で後悔することも", "投資の基本だけは事前に確認しておこう"],
+    actions: ["まず楽天証券かSBI証券で口座開設", "月1万円からオルカンかS&P500で積立開始"],
+  },
+  {
+    id: "auto",
+    emoji: "😴",
+    name: "ほったらかし最強タイプ",
+    sub: "一度設定したら放置OK。それが最強の投資スタイル",
+    condition: s => s.keep >= 3 && s.learn <= 1,
+    strengths: ["感情に左右されず淡々と続けられる", "余計な操作をしないので積立が育ちやすい", "ストレスフリーな投資ができる"],
+    cautions: ["たまには残高を確認する習慣を", "詐欺や怪しい情報に乗っかりやすいので注意"],
+    actions: ["積立NISAを設定したら基本は放置でOK", "年1回だけ積立額を見直す習慣をつける"],
+  },
+  {
+    id: "researcher",
+    emoji: "📊",
+    name: "研究家タイプ",
+    sub: "仕組みを理解してから動く知識派タイプ",
+    condition: s => s.learn >= 3,
+    strengths: ["理解してから動くので失敗が少ない", "知識が積み上がって判断力が高まる", "人に説明できるくらい詳しくなれる"],
+    cautions: ["勉強ばかりで始められないことも。完璧を求めすぎず動こう"],
+    actions: ["NISA完全攻略ガイドを読んでから口座開設", "まず月5,000円の少額でお試しスタート"],
+  },
+  {
+    id: "balanced",
+    emoji: "🌱",
+    name: "バランス成長タイプ",
+    sub: "特定の偏りなく、バランスよく成長できるタイプ",
+    condition: s => true, // デフォルト
+    strengths: ["特定のスタイルに縛られない柔軟さがある", "状況に合わせて動ける適応力がある"],
+    cautions: ["優柔不断になりやすいこともある", "まず1つに絞って動くことが大事"],
+    actions: ["まずはNISA口座を開設することだけを目標に", "月3,000円からでもOK、金額は後で変えられる"],
+  },
+];
+
+// スコア管理
+let scores = { cautious: 0, action: 0, goal: 0, keep: 0, learn: 0 };
+let currentQ = 0;
+let answers = new Array(questions.length).fill(null);
+
+const paramLabels = {
+  cautious: "🛡️ 慎重さ",
+  action:   "⚡ 行動力",
+  goal:     "🎯 目標志向",
+  keep:     "🔄 継続力",
+  learn:    "📚 知識欲",
+};
+
+function startQuiz() {
+  showScreen('screen-question');
+  renderQuestion();
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function renderQuestion() {
+  const q = questions[currentQ];
+  document.getElementById('q-label').textContent = `QUESTION ${currentQ + 1}`;
+  document.getElementById('q-count').textContent = `${currentQ + 1} / ${questions.length}`;
+  document.getElementById('q-num').textContent = `Q${currentQ + 1}`;
+  document.getElementById('q-text').textContent = q.text;
+  document.getElementById('progress-fill').style.width = `${((currentQ + 1) / questions.length) * 100}%`;
+
+  const optionsEl = document.getElementById('options');
+  optionsEl.innerHTML = '';
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.textContent = opt.text;
+    if (answers[currentQ] === i) btn.classList.add('selected');
+    btn.onclick = () => selectOption(i);
+    optionsEl.appendChild(btn);
+  });
+
+  updateNextBtn();
+  document.getElementById('next-btn').textContent = currentQ === questions.length - 1 ? '結果を見る 🎉' : '次の質問へ →';
+}
+
+function selectOption(i) {
+  answers[currentQ] = i;
+  document.querySelectorAll('.option-btn').forEach((btn, idx) => {
+    btn.classList.toggle('selected', idx === i);
+  });
+  updateNextBtn();
+}
+
+function updateNextBtn() {
+  const btn = document.getElementById('next-btn');
+  if (answers[currentQ] !== null) {
+    btn.classList.add('active');
+  } else {
+    btn.classList.remove('active');
+  }
+}
+
+function goNext() {
+  if (answers[currentQ] === null) return;
+  if (currentQ < questions.length - 1) {
+    currentQ++;
+    renderQuestion();
+  } else {
+    showResult();
+  }
+}
+
+function goBack() {
+  if (currentQ > 0) {
+    currentQ--;
+    renderQuestion();
+  } else {
+    showScreen('screen-top');
+  }
+}
+
+function calcScores() {
+  scores = { cautious: 0, action: 0, goal: 0, keep: 0, learn: 0 };
+  questions.forEach((q, i) => {
+    if (answers[i] !== null) {
+      const s = q.options[answers[i]].scores;
+      Object.keys(s).forEach(k => scores[k] += s[k]);
+    }
+  });
+}
+
+function getType() {
+  for (const t of types) {
+    if (t.condition(scores)) return t;
+  }
+  return types[types.length - 1];
+}
+
+function showResult() {
+  calcScores();
+  const type = getType();
+
+  document.getElementById('result-emoji').textContent = type.emoji;
+  document.getElementById('result-name').textContent = type.name;
+  document.getElementById('result-sub').textContent = type.sub;
+
+  // パラメーターバー
+  const maxScore = 4;
+  const paramsEl = document.getElementById('params');
+  paramsEl.innerHTML = '';
+  Object.entries(paramLabels).forEach(([key, label]) => {
+    const score = Math.min(scores[key], maxScore);
+    const pct = Math.round((score / maxScore) * 100);
+    paramsEl.innerHTML += `
+      <div class="param-row">
+        <div class="param-label-row">
+          <span class="param-label">${label}</span>
+          <span class="param-score">${pct}%</span>
+        </div>
+        <div class="param-bar-bg">
+          <div class="param-bar-fill" data-pct="${pct}" style="width:0%"></div>
+        </div>
+      </div>`;
+  });
+
+  // 強み
+  document.getElementById('strengths').innerHTML = type.strengths.map(s =>
+    `<div class="info-item"><span class="info-icon">✅</span><span>${s}</span></div>`).join('');
+
+  // 注意点
+  document.getElementById('cautions').innerHTML = type.cautions.map(s =>
+    `<div class="info-item"><span class="info-icon">⚠️</span><span>${s}</span></div>`).join('');
+
+  // アクション
+  document.getElementById('actions').innerHTML = type.actions.map(s =>
+    `<div class="info-item"><span class="info-icon">📌</span><span>${s}</span></div>`).join('');
+
+  showScreen('screen-result');
+
+  // バーをアニメーション
+  setTimeout(() => {
+    document.querySelectorAll('.param-bar-fill').forEach(el => {
+      el.style.width = el.dataset.pct + '%';
+    });
+  }, 100);
+}
+
+function restart() {
+  currentQ = 0;
+  answers = new Array(questions.length).fill(null);
+  scores = { cautious: 0, action: 0, goal: 0, keep: 0, learn: 0 };
+  showScreen('screen-top');
+}
+</script>
+</body>
+</html>
